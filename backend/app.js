@@ -1,10 +1,21 @@
 const express = require("express");
 const cors = require("cors");
+const dataSource = require("./db/data-source");
+
+dataSource;
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.get("/healthcheck", async (req, res) => {
+  try {
+    await dataSource.query("SELECT 1");
+    res.status(200).send("OK");
+  } catch {
+    res.status(503).send("Service Unavailable");
+  }
+});
 
 // 404 錯誤
 app.use((req, res, next) => {
