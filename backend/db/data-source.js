@@ -33,6 +33,7 @@ const dataSource = new DataSource({
     Course,
     CourseBooking,
   ],
+  migrations: ["db/migrations/*.js"],
 });
 
 module.exports = dataSource;
