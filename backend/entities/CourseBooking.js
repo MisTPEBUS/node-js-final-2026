@@ -43,6 +43,26 @@ const CourseBooking = new EntitySchema({
       onDelete: "RESTRICT",
     },
   },
+  uniques: [
+    {
+      name: "UQ_course_bookings_user_course",
+      columns: ["user_id", "course_id"],
+    },
+  ],
+  indices: [
+    {
+      name: "IDX_course_bookings_user_cancelled",
+      columns: ["user_id", "cancelled_at"],
+    },
+    {
+      name: "IDX_course_bookings_course_cancelled",
+      columns: ["course_id", "cancelled_at"],
+    },
+    {
+      name: "IDX_course_bookings_course_created_at",
+      columns: ["course_id", "created_at"],
+    },
+  ],
 });
 
 module.exports = { CourseBooking };

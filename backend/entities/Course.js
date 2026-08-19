@@ -82,6 +82,12 @@ const Course = new EntitySchema({
       columns: ["skill_id"],
     },
   ],
+  checks: [
+    {
+      name: "CHK_courses_max_participants",
+      expression: '"max_participants" >= 0',
+    },
+  ],
 });
 
 module.exports = { Course };

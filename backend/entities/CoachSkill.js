@@ -29,6 +29,12 @@ const CoachSkill = new EntitySchema({
       onDelete: "CASCADE",
     },
   },
+  indices: [
+    {
+      name: "IDX_coach_skills_skill_id",
+      columns: ["skill_id"],
+    },
+  ],
 });
 
 module.exports = { CoachSkill };

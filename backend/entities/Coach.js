@@ -44,6 +44,12 @@ const Coach = new EntitySchema({
       onDelete: "RESTRICT",
     },
   },
+  checks: [
+    {
+      name: "CHK_coaches_experience_years",
+      expression: '"experience_years" >= 0',
+    },
+  ],
 });
 
 module.exports = { Coach };

@@ -41,6 +41,12 @@ const User = new EntitySchema({
       updateDate: true,
     },
   },
+  checks: [
+    {
+      name: "CHK_users_role",
+      expression: "\"role\" IN ('USER', 'COACH')",
+    },
+  ],
 });
 
 module.exports = { User };

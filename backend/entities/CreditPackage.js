@@ -28,6 +28,16 @@ const CreditPackage = new EntitySchema({
       createDate: true,
     },
   },
+  checks: [
+    {
+      name: "CHK_credit_packages_credit_amount",
+      expression: '"credit_amount" >= 0',
+    },
+    {
+      name: "CHK_credit_packages_price",
+      expression: '"price" >= 0',
+    },
+  ],
 });
 
 module.exports = { CreditPackage };

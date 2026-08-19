@@ -47,6 +47,22 @@ const CreditPurchase = new EntitySchema({
       onDelete: "RESTRICT",
     },
   },
+  indices: [
+    {
+      name: "IDX_credit_purchases_user_purchase_at",
+      columns: ["user_id", "purchase_at"],
+    },
+  ],
+  checks: [
+    {
+      name: "CHK_credit_purchases_purchased_credits",
+      expression: '"purchased_credits" >= 0',
+    },
+    {
+      name: "CHK_credit_purchases_price_paid",
+      expression: '"price_paid" >= 0',
+    },
+  ],
 });
 
 module.exports = { CreditPurchase };
