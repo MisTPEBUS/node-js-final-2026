@@ -1,8 +1,8 @@
-const app = require("../app");
-const config = require("../config");
-const dataSource = require("../db/data-source");
+const app = require("./app");
+const config = require("./config");
+const dataSource = require("./db/data-source");
 
-const port = config.get("web.port");
+const port = Number(config.get("web.port"));
 
 async function startServer() {
   await dataSource.initialize();
@@ -11,15 +11,31 @@ async function startServer() {
     console.log(`Backend is listening on port ${port}`);
   });
 
+  let isShuttingDown = false;
+
   async function shutdown(signal) {
+    if (isShuttingDown) return;
+    isShuttingDown = true;
+
     console.log(`${signal} received, shutting down`);
 
-    server.close(async () => {
+    try {
+      await new Promise((resolve, reject) => {
+        server.close((error) => {
+          if (error) return reject(error);
+          resolve();
+        });
+      });
+
       if (dataSource.isInitialized) {
         await dataSource.destroy();
       }
+
       process.exit(0);
-    });
+    } catch (error) {
+      console.error("Failed to shut down backend", error);
+      process.exit(1);
+    }
   }
 
   process.on("SIGINT", () => shutdown("SIGINT"));
