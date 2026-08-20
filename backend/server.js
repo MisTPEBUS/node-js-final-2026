@@ -2,7 +2,7 @@ const app = require("./app");
 const config = require("./config");
 const dataSource = require("./db/data-source");
 
-const port = Number(config.get("web.port"));
+const port = Number(config.web.port);
 
 async function startServer() {
   await dataSource.initialize();
