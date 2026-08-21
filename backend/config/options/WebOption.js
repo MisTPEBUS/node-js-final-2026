@@ -4,4 +4,4 @@ function createWebOptions(env) {
   });
 }
 
-module.exports = createWebOptions;
+export default createWebOptions;

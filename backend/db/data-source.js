@@ -1,13 +1,17 @@
-const { DataSource } = require("typeorm");
-const config = require("../config");
-const { User } = require("../entities/User");
-const { Skill } = require("../entities/Skill");
-const { CreditPackage } = require("../entities/CreditPackage");
-const { CreditPurchase } = require("../entities/CreditPurchase");
-const { Coach } = require("../entities/Coach");
-const { CoachSkill } = require("../entities/CoachSkill");
-const { Course } = require("../entities/Course");
-const { CourseBooking } = require("../entities/CourseBooking");
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { DataSource } from "typeorm";
+import config from "../config/index.js";
+import { User } from "../entities/User.js";
+import { Skill } from "../entities/Skill.js";
+import { CreditPackage } from "../entities/CreditPackage.js";
+import { CreditPurchase } from "../entities/CreditPurchase.js";
+import { Coach } from "../entities/Coach.js";
+import { CoachSkill } from "../entities/CoachSkill.js";
+import { Course } from "../entities/Course.js";
+import { CourseBooking } from "../entities/CourseBooking.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const dataSource = new DataSource({
   type: "postgres",
@@ -28,7 +32,7 @@ const dataSource = new DataSource({
     Course,
     CourseBooking,
   ],
-  migrations: ["db/migrations/*.js"],
+  migrations: [path.join(__dirname, "migrations", "*.js")],
 });
 
-module.exports = dataSource;
+export default dataSource;

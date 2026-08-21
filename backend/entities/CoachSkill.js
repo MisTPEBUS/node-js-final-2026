@@ -1,4 +1,4 @@
-const { EntitySchema } = require("typeorm");
+import { EntitySchema } from "typeorm";
 
 const CoachSkill = new EntitySchema({
   name: "CoachSkill",
@@ -37,4 +37,4 @@ const CoachSkill = new EntitySchema({
   ],
 });
 
-module.exports = { CoachSkill };
+export { CoachSkill };

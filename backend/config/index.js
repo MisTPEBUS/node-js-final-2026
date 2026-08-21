@@ -1,7 +1,7 @@
-const env = require("./env");
-const createDbOptions = require("./options/DBOption");
-const createJwtOptions = require("./options/JwtOption");
-const createWebOptions = require("./options/WebOption");
+import env from "./env.js";
+import createDbOptions from "./options/DBOption.js";
+import createJwtOptions from "./options/JwtOption.js";
+import createWebOptions from "./options/WebOption.js";
 
 const config = Object.freeze({
   db: createDbOptions(env),
@@ -9,4 +9,4 @@ const config = Object.freeze({
   jwt: createJwtOptions(env),
 });
 
-module.exports = config;
+export default config;

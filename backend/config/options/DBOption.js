@@ -10,4 +10,4 @@ function createDbOptions(env) {
   });
 }
 
-module.exports = createDbOptions;
+export default createDbOptions;

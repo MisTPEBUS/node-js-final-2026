@@ -1,15 +1,22 @@
-const app = require("./app");
-const config = require("./config");
-const dataSource = require("./db/data-source");
+import app from "./app.js";
+import config from "./config/index.js";
+import dataSource from "./db/data-source.js";
 
 const port = Number(config.web.port);
 
 async function startServer() {
-  await dataSource.initialize();
+  let server;
 
-  const server = app.listen(port, () => {
-    console.log(`Backend is listening on port ${port}`);
-  });
+  try {
+    await dataSource.initialize();
+    console.log("資料庫連線成功");
+    server = app.listen(port, () => {
+      console.log(`server 跑起來了：http://localhost:${port}`);
+    });
+  } catch (err) {
+    console.error("資料庫連線失敗", err);
+    process.exit(1);
+  }
 
   let isShuttingDown = false;
 

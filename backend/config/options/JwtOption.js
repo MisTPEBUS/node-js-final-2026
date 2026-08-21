@@ -5,4 +5,4 @@ function createJwtOptions(env) {
   });
 }
 
-module.exports = createJwtOptions;
+export default createJwtOptions;

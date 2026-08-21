@@ -7,7 +7,7 @@
  * @class
  * @implements {MigrationInterface}
  */
-module.exports = class Init1787124213205 {
+export default class Init1787124213205 {
     name = 'Init1787124213205'
 
     /**

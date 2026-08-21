@@ -7,7 +7,7 @@
  * @class
  * @implements {MigrationInterface}
  */
-module.exports = class AddConstraints1787124758300 {
+export default class AddConstraints1787124758300 {
     name = 'AddConstraints1787124758300'
 
     /**
