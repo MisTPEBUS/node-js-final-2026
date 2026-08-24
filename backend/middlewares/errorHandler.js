@@ -14,6 +14,7 @@ const jsonErrorHandler = (err, req, res, next) => {
 
 // middleware 全域錯誤處理
 const errorHandler = (err, req, res, next) => {
+  console.log(`[errorHandler] response headers sent: ${res.headersSent}`);
   if (res.headersSent) {
     return next(err);
   }
@@ -36,7 +37,7 @@ const errorHandler = (err, req, res, next) => {
     `[${req.method}] ${req.originalUrl} -> ${statusCode}: ${err.message}`,
   );
 
-  return responseHelper.fail(
+  return responseHelper.sendError(
     res,
     statusCode,
     err.message || "請求處理失敗",

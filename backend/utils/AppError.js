@@ -29,7 +29,7 @@ class UnauthorizedError extends AppError {
   }
 }
 
-class ForbiddenError extends AppError {
+class ForbiddenError_403 extends AppError {
   constructor(message = "沒有操作權限") {
     super(403, message);
   }
@@ -41,11 +41,18 @@ class NotFoundError extends AppError {
   }
 }
 
+class ConflictError_409 extends AppError {
+  constructor(message = "資料重複", errors = null) {
+    super(409, message, errors);
+  }
+}
+
 export {
   AppError,
   BadRequestError,
   ValidationError,
   UnauthorizedError,
-  ForbiddenError,
   NotFoundError,
+  ForbiddenError_403,
+  ConflictError_409,
 };
