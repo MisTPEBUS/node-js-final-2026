@@ -1,3 +1,4 @@
+import { ZodError } from "zod";
 import responseHelper from "../utils/responseHelper.js";
 
 // 捕捉 JSON 解析錯誤
@@ -21,16 +22,17 @@ const errorHandler = (err, req, res, next) => {
     return next(err);
   }
 
-  const candidateStatusCode = Number(err.statusCode ?? err.status);
-  const statusCode =
-    Number.isInteger(candidateStatusCode) &&
-    candidateStatusCode >= 400 &&
-    candidateStatusCode <= 599
-      ? candidateStatusCode
-      : 500;
+  if (err instanceof ZodError) {
+    const message = err.issues[0]?.message ?? "欄位未填寫正確";
+
+    return responseHelper.sendError(res, 400, message);
+  }
+
+  const statusCode = err.statusCode || 500;
 
   if (statusCode >= 500) {
     console.error(`[${req.method}] ${req.originalUrl}`, err);
+
     return responseHelper.serverError(res);
   }
 
