@@ -9,11 +9,7 @@ const jsonErrorHandler = (err, req, res, next) => {
 
   console.warn(`[${req.method}] ${req.originalUrl} -> 400:  JSON Error`);
 
-  return responseHelper.sendError(
-    res,
-    400,
-    "傳入的 JSON 格式錯誤，請格式是否正確",
-  );
+  return responseHelper.fail(res, 400, "傳入的 JSON 格式錯誤，請格式是否正確");
 };
 
 // middleware 全域錯誤處理
@@ -40,7 +36,7 @@ const errorHandler = (err, req, res, next) => {
     `[${req.method}] ${req.originalUrl} -> ${statusCode}: ${err.message}`,
   );
 
-  return responseHelper.sendError(
+  return responseHelper.fail(
     res,
     statusCode,
     err.message || "請求處理失敗",
