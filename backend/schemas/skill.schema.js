@@ -11,7 +11,7 @@ const skillBodySchema = z.object({
 
 export const deleteSkillSchema = z.object({
   params: z.object({
-    skillId: z.string().uuid("欄位未填寫正確"),
+    skillId: z.string().uuid("ID錯誤"),
   }),
 });
 

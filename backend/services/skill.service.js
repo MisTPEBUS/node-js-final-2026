@@ -26,6 +26,13 @@ const skillService = {
 
     return await skillRepo.save(skillRepo.create({ name }));
   },
+  async deleteAsync(skillId) {
+    const result = await skillRepo.delete(skillId);
+
+    if (!result.affected) {
+      throw new AppError(400, "ID錯誤");
+    }
+  },
 };
 
 export default skillService;

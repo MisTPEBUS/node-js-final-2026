@@ -18,6 +18,14 @@ const skillController = {
       createdAt: skill.created_at,
     });
   },
+
+  async deleteSkill(req, res) {
+    const { skillId } = req.validated.params;
+
+    await skillService.deleteAsync(skillId);
+
+    return responseHelper.ok(res, null);
+  },
 };
 
 export default skillController;
