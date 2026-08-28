@@ -26,7 +26,7 @@ const skillService = {
 
     return await skillRepo.save(skillRepo.create({ name }));
   },
-  async deleteAsync(skillId) {
+  async deleteAsyncById(skillId) {
     const result = await skillRepo.delete(skillId);
 
     if (!result.affected) {
