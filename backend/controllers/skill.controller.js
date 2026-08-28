@@ -22,7 +22,7 @@ const skillController = {
   async deleteSkill(req, res) {
     const { skillId } = req.validated.params;
 
-    await skillService.deleteAsync(skillId);
+    await skillService.deleteAsyncById(skillId);
 
     return responseHelper.ok(res, null);
   },
