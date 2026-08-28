@@ -1,17 +1,12 @@
 import z from "zod";
 
 const skillBodySchema = z.object({
-  name: z
-    .string({
-      error: "欄位未填寫正確",
-    })
-    .trim()
-    .min(1, "欄位未填寫正確"),
+  name: z.string().trim().min(1),
 });
 
 export const deleteSkillSchema = z.object({
   params: z.object({
-    skillId: z.string().uuid("ID錯誤"),
+    skillId: z.uuid("ID錯誤"),
   }),
 });
 
