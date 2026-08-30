@@ -56,6 +56,27 @@ const creditPackageService = {
 
     await creditPurchaseRepo.save(purchase);
   },
+  //M5
+  async getPurchasesByUserId(userId) {
+    const purchases = await creditPurchaseRepo.find({
+      where: {
+        user_id: userId,
+      },
+      relations: {
+        credit_package: true,
+      },
+      order: {
+        purchase_at: "DESC",
+      },
+    });
+
+    return purchases.map((purchase) => ({
+      name: purchase.credit_package.name,
+      purchased_credits: purchase.purchased_credits,
+      price_paid: Number(purchase.price_paid),
+      purchase_at: purchase.purchase_at,
+    }));
+  },
 };
 
 export default creditPackageService;

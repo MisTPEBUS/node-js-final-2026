@@ -1,3 +1,4 @@
+import creditPackageService from "../services/credit-package.service.js";
 import userService from "../services/user.service.js";
 import responseHelper from "../utils/responseHelper.js";
 
@@ -45,6 +46,14 @@ const userController = {
     await userService.updatePasswordById(id, req.validated.body);
 
     return responseHelper.ok(res, null);
+  },
+  //M5
+  async getCreditPurchases(req, res) {
+    const purchases = await creditPackageService.getPurchasesByUserId(
+      req.user.id,
+    );
+
+    return responseHelper.ok(res, purchases);
   },
 };
 

@@ -26,5 +26,11 @@ router.put(
   validate(updatePasswordSchema),
   userController.updatePassword,
 );
+//M5
+router.get(
+  "/credit-package",
+  isAuth,
+  userController.getCreditPurchases,
+);
 
 export default router;
