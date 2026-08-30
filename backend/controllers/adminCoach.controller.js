@@ -1,5 +1,7 @@
 import coachService from "../services/coach.service.js";
 import courseService from "../services/course.service.js";
+//M6
+import revenueService from "../services/revenue.service.js";
 import responseHelper from "../utils/responseHelper.js";
 
 const adminCoachController = {
@@ -55,6 +57,17 @@ const adminCoachController = {
     return responseHelper.ok(res, {
       course,
     });
+  },
+
+  //M6
+
+  async getMonthlyRevenue(req, res) {
+    const result = await revenueService.getMonthlyRevenueByUserId(
+      req.user.id,
+      req.validated.query.month,
+    );
+
+    return responseHelper.ok(res, result);
   },
 };
 

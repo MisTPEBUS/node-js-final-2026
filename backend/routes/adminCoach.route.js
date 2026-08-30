@@ -10,6 +10,8 @@ import {
   updateCoachSchema,
   updateCourseSchema,
 } from "../schemas/adminCoach.schemas.js";
+//M6
+import { revenueSchema } from "../schemas/coach.schema.js";
 import { UserRole } from "../utils/helper.js";
 
 const router = express.Router();
@@ -57,6 +59,14 @@ router.put(
   authorize(UserRole.COACH),
   validate(updateCoachSchema),
   adminCoachController.updateCoachProfile,
+);
+//M6
+router.get(
+  "/revenue",
+  isAuth,
+  authorize(UserRole.COACH),
+  validate(revenueSchema),
+  adminCoachController.getMonthlyRevenue,
 );
 
 export default router;
