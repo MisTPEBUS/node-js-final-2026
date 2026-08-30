@@ -18,6 +18,14 @@ const courseController = {
 
     return responseHelper.created(res, null);
   },
+  async cancelCourse(req, res) {
+    await bookingService.cancelCourseById(
+      req.user.id,
+      req.validated.params.courseId,
+    );
+
+    return responseHelper.ok(res, null);
+  },
 };
 
 export default courseController;

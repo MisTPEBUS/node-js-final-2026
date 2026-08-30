@@ -16,4 +16,11 @@ route.post(
   courseController.bookCourse,
 );
 
+route.delete(
+  "/:courseId",
+  isAuth,
+  validate(courseIdSchema),
+  courseController.cancelCourse,
+);
+
 export default route;

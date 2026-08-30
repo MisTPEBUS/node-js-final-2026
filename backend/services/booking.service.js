@@ -5,7 +5,7 @@ import { CourseBooking } from "../entities/CourseBooking.js";
 import { CreditPurchase } from "../entities/CreditPurchase.js";
 import { User } from "../entities/User.js";
 import { BadRequestError } from "../utils/AppError.js";
-
+const bookingRepo = dataSource.getRepository(CourseBooking);
 const bookingService = {
   //M5
   async bookCourseById(userId, courseId) {
@@ -51,8 +51,7 @@ const bookingService = {
       });
 
       const purchasedCredits = purchases.reduce(
-        (total, purchase) =>
-          total + Number(purchase.purchased_credits),
+        (total, purchase) => total + Number(purchase.purchased_credits),
         0,
       );
 
@@ -81,6 +80,22 @@ const bookingService = {
 
       await bookingRepo.save(booking);
     });
+  },
+  async cancelCourseById(userId, courseId) {
+    const result = await bookingRepo.update(
+      {
+        user_id: userId,
+        course_id: courseId,
+        cancelled_at: IsNull(),
+      },
+      {
+        cancelled_at: new Date(),
+      },
+    );
+
+    if (result.affected !== 1) {
+      throw new BadRequestError("ID錯誤");
+    }
   },
 };
 
