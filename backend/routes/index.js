@@ -6,6 +6,7 @@ import userRoute from "./user.route.js";
 import adminCoachRoute from "./adminCoach.route.js";
 import coachRoute from "./coach.route.js";
 import courseRoute from "./courses.route.js";
+import uploadRoute from "./upload.route.js";
 
 const v1Routes = express.Router();
 
@@ -16,4 +17,5 @@ v1Routes.use("/api/users", userRoute);
 v1Routes.use("/api/admin/coaches", adminCoachRoute);
 v1Routes.use("/api/coaches", coachRoute);
 v1Routes.use("/api/courses", courseRoute);
+v1Routes.use("/api/upload", uploadRoute);
 export default v1Routes;
