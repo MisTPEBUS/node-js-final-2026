@@ -1,7 +1,7 @@
 import dataSource from "../db/data-source.js";
 import { CreditPackage } from "../entities/CreditPackage.js";
 import { CreditPurchase } from "../entities/CreditPurchase.js";
-import { BadRequestError } from "../utils/AppError.js";
+import { BadRequestError, ConflictError_409 } from "../utils/AppError.js";
 
 const creditPackageRepo = dataSource.getRepository(CreditPackage);
 const creditPurchaseRepo = dataSource.getRepository(CreditPurchase);
@@ -24,7 +24,7 @@ const creditPackageService = {
     const existing = await creditPackageRepo.findOneBy({ name });
 
     if (existing) {
-      throw new AppError(409, "資料重複");
+      throw new ConflictError_409("資料重複");
     }
 
     return await creditPackageRepo.save(
@@ -34,7 +34,7 @@ const creditPackageService = {
   async deleteAsyncById(creditPackageId) {
     const result = await creditPackageRepo.delete(creditPackageId);
     if (!result.affected) {
-      throw new AppError(400, "ID錯誤");
+      throw new BadRequestError("ID錯誤");
     }
   },
   // M5
