@@ -27,10 +27,8 @@ router.put(
   userController.updatePassword,
 );
 //M5
-router.get(
-  "/credit-package",
-  isAuth,
-  userController.getCreditPurchases,
-);
+router.get("/credit-package", isAuth, userController.getCreditPurchases);
+//M5 修改既有路由
+router.get("/courses", isAuth, userController.getCourses);
 
 export default router;

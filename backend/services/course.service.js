@@ -2,12 +2,14 @@ import { LessThanOrEqual, MoreThan } from "typeorm";
 import dataSource from "../db/data-source.js";
 import { Course } from "../entities/Course.js";
 import { CourseBooking } from "../entities/CourseBooking.js";
+import { CreditPurchase } from "../entities/CreditPurchase.js";
 import { Skill } from "../entities/Skill.js";
 import { BadRequestError } from "../utils/AppError.js";
 import { getCourseStatus } from "../utils/helper.js";
 
 const courseRepo = dataSource.getRepository(Course);
 const bookingRepo = dataSource.getRepository(CourseBooking);
+const creditPurchaseRepo = dataSource.getRepository(CreditPurchase);
 
 const skillRepo = dataSource.getRepository(Skill);
 
@@ -166,6 +168,52 @@ const courseService = {
       coach_name: course.user.name,
       skill_name: course.skill.name,
     }));
+  },
+
+  //M5
+  async getCoursesByUserId(userId) {
+    const purchases = await creditPurchaseRepo.findBy({
+      user_id: userId,
+    });
+
+    const bookings = await bookingRepo.find({
+      where: {
+        user_id: userId,
+      },
+      relations: {
+        course: {
+          user: true,
+        },
+      },
+      order: {
+        course: {
+          start_at: "ASC",
+        },
+      },
+    });
+
+    const purchasedCredits = purchases.reduce(
+      (total, purchase) => total + Number(purchase.purchased_credits),
+      0,
+    );
+
+    const creditUsage = bookings.filter(
+      (booking) => booking.cancelled_at === null,
+    ).length;
+
+    return {
+      credit_remain: purchasedCredits - creditUsage,
+      credit_usage: creditUsage,
+      course_booking: bookings.map((booking) => ({
+        course_id: booking.course_id,
+        name: booking.course.name,
+        start_at: booking.course.start_at,
+        end_at: booking.course.end_at,
+        meeting_url: booking.course.meeting_url,
+        coach_name: booking.course.user.name,
+        cancelled_at: booking.cancelled_at,
+      })),
+    };
   },
 };
 

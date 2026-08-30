@@ -1,3 +1,4 @@
+import courseService from "../services/course.service.js";
 import creditPackageService from "../services/credit-package.service.js";
 import userService from "../services/user.service.js";
 import responseHelper from "../utils/responseHelper.js";
@@ -54,6 +55,11 @@ const userController = {
     );
 
     return responseHelper.ok(res, purchases);
+  },
+  async getCourses(req, res) {
+    const courseSchedule = await courseService.getCoursesByUserId(req.user.id);
+
+    return responseHelper.ok(res, courseSchedule);
   },
 };
 
