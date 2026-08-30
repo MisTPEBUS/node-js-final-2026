@@ -21,6 +21,15 @@ const creditPackageController = {
     await creditPackageService.deleteAsyncById(creditPackageId);
     return responseHelper.ok(res, null);
   },
+  // M5
+  async purchaseCreditPackage(req, res) {
+    await creditPackageService.purchaseCreditPackage(
+      req.user.id,
+      req.validated.params.creditPackageId,
+    );
+
+    return responseHelper.ok(res, null);
+  },
 };
 
 export default creditPackageController;

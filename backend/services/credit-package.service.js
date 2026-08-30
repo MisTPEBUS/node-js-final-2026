@@ -1,8 +1,10 @@
 import dataSource from "../db/data-source.js";
 import { CreditPackage } from "../entities/CreditPackage.js";
-import { AppError } from "../utils/AppError.js";
+import { CreditPurchase } from "../entities/CreditPurchase.js";
+import { BadRequestError } from "../utils/AppError.js";
 
 const creditPackageRepo = dataSource.getRepository(CreditPackage);
+const creditPurchaseRepo = dataSource.getRepository(CreditPurchase);
 
 const creditPackageService = {
   getAll() {
@@ -34,6 +36,25 @@ const creditPackageService = {
     if (!result.affected) {
       throw new AppError(400, "ID錯誤");
     }
+  },
+  // M5
+  async purchaseCreditPackage(userId, creditPackageId) {
+    const creditPackage = await creditPackageRepo.findOneBy({
+      id: creditPackageId,
+    });
+
+    if (!creditPackage) {
+      throw new BadRequestError("ID錯誤");
+    }
+
+    const purchase = creditPurchaseRepo.create({
+      user_id: userId,
+      credit_package_id: creditPackage.id,
+      purchased_credits: creditPackage.credit_amount,
+      price_paid: creditPackage.price,
+    });
+
+    await creditPurchaseRepo.save(purchase);
   },
 };
 

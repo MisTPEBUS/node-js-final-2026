@@ -13,3 +13,7 @@ export const createCreditPackageSchema = z.object({
 export const deleteCreditPackageSchema = z.object({
   params: z.object({ creditPackageId: z.uuid("ID錯誤") }),
 });
+
+export const purchaseCreditPackageSchema = z.object({
+  params: z.object({ creditPackageId: z.uuid("ID錯誤") }),
+});
