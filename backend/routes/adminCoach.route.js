@@ -5,11 +5,40 @@ import validate from "../middlewares/validate.js";
 import adminCoachController from "../controllers/adminCoach.controller.js";
 import {
   createCoachSchema,
+  createCourseSchema,
+  getCourseSchema,
   updateCoachSchema,
+  updateCourseSchema,
 } from "../schemas/adminCoach.schemas.js";
 import { UserRole } from "../utils/helper.js";
 
 const router = express.Router();
+router.post(
+  "/courses",
+  isAuth,
+  authorize(UserRole.COACH),
+  validate(createCourseSchema),
+  adminCoachController.createCourse,
+);
+router.get(
+  "/courses/:courseId",
+  isAuth,
+  validate(getCourseSchema),
+  adminCoachController.getCoachCourseDetail,
+);
+router.put(
+  "/courses/:courseId",
+  isAuth,
+  validate(updateCourseSchema),
+  adminCoachController.updateCoachCourse,
+);
+
+router.get(
+  "/courses",
+  isAuth,
+  authorize(UserRole.COACH),
+  adminCoachController.getCoachCourses,
+);
 
 router.post(
   "/:userId",
@@ -29,6 +58,5 @@ router.put(
   validate(updateCoachSchema),
   adminCoachController.updateCoachProfile,
 );
-router.get("/courses", isAuth, authorize(UserRole.COACH));
 
 export default router;

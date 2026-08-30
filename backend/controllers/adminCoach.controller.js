@@ -1,4 +1,5 @@
 import coachService from "../services/coach.service.js";
+import courseService from "../services/course.service.js";
 import responseHelper from "../utils/responseHelper.js";
 
 const adminCoachController = {
@@ -20,6 +21,40 @@ const adminCoachController = {
     );
 
     return responseHelper.ok(res, result);
+  },
+  async getCoachCourses(req, res) {
+    const courses = await courseService.getCoachCoursesByUserId(req.user.id);
+    return responseHelper.ok(res, courses);
+  },
+
+  async createCourse(req, res) {
+    const course = await courseService.createCourseByUserId(
+      req.user.id,
+      req.validated.body,
+    );
+
+    return responseHelper.created(res, {
+      course,
+    });
+  },
+  async getCoachCourseDetail(req, res) {
+    const course = await courseService.getCoachCourseDetailById(
+      req.user.id,
+      req.validated.params.courseId,
+    );
+
+    return responseHelper.ok(res, course);
+  },
+  async updateCoachCourse(req, res) {
+    const course = await courseService.updateCoachCourseById(
+      req.user.id,
+      req.validated.params.courseId,
+      req.validated.body,
+    );
+
+    return responseHelper.ok(res, {
+      course,
+    });
   },
 };
 

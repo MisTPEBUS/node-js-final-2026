@@ -1,0 +1,147 @@
+import dataSource from "../db/data-source.js";
+import { Course } from "../entities/Course.js";
+import { CourseBooking } from "../entities/CourseBooking.js";
+import { Skill } from "../entities/Skill.js";
+import { BadRequestError } from "../utils/AppError.js";
+import { getCourseStatus } from "../utils/helper.js";
+
+const courseService = {
+  async getCoachCoursesByUserId(userId) {
+    const courseRepo = dataSource.getRepository(Course);
+    const bookingRepo = dataSource.getRepository(CourseBooking);
+    const now = new Date();
+
+    const courses = await courseRepo.find({
+      where: { user_id: userId },
+      order: { start_at: "ASC" },
+    });
+    if (courses.length === 0) return [];
+
+    const rows = await bookingRepo
+      .createQueryBuilder("b")
+      .select("b.course_id", "course_id")
+      .addSelect("COUNT(*)", "count")
+      .where("b.course_id IN (:...ids)", { ids: courses.map((c) => c.id) })
+      .andWhere("b.cancelled_at IS NULL")
+      .groupBy("b.course_id")
+      .getRawMany();
+    const countMap = new Map(rows.map((r) => [r.course_id, Number(r.count)]));
+    return courses.map((c) => ({
+      id: c.id,
+      name: c.name,
+      status: getCourseStatus(c.start_at, c.end_at, now),
+      start_at: c.start_at,
+      end_at: c.end_at,
+      max_participants: c.max_participants,
+      meeting_url: c.meeting_url,
+      participants: countMap.get(c.id) ?? 0,
+    }));
+  },
+  async createCourseByUserId(
+    userId,
+    {
+      skill_id,
+      name,
+      description,
+      start_at,
+      end_at,
+      max_participants,
+      meeting_url,
+    },
+  ) {
+    const courseRepo = dataSource.getRepository(Course);
+    const skillRepo = dataSource.getRepository(Skill);
+    const skill = await skillRepo.findOneBy({
+      id: skill_id,
+    });
+
+    if (!skill) {
+      throw new BadRequestError("欄位未填寫正確");
+    }
+
+    const course = courseRepo.create({
+      user_id: userId,
+      skill_id,
+      name,
+      description,
+      start_at: new Date(start_at),
+      end_at: new Date(end_at),
+      max_participants,
+      meeting_url,
+    });
+
+    return courseRepo.save(course);
+  },
+  async getCoachCourseDetailById(userId, courseId) {
+    const courseRepo = dataSource.getRepository(Course);
+
+    const course = await courseRepo.findOne({
+      where: {
+        id: courseId,
+        user_id: userId,
+      },
+      relations: {
+        skill: true,
+      },
+    });
+
+    if (!course) {
+      throw new BadRequestError("課程不存在");
+    }
+
+    return {
+      id: course.id,
+      name: course.name,
+      description: course.description,
+      start_at: course.start_at,
+      end_at: course.end_at,
+      max_participants: course.max_participants,
+      skill_name: course.skill.name,
+      skill_id: course.skill_id,
+      meeting_url: course.meeting_url,
+    };
+  },
+  async updateCoachCourseById(
+    userId,
+    courseId,
+    {
+      skill_id,
+      name,
+      description,
+      start_at,
+      end_at,
+      max_participants,
+      meeting_url,
+    },
+  ) {
+    const courseRepo = dataSource.getRepository(Course);
+    const skillRepo = dataSource.getRepository(Skill);
+
+    const course = await courseRepo.findOneBy({
+      id: courseId,
+      user_id: userId,
+    });
+
+    if (!course) {
+      throw new BadRequestError("課程不存在");
+    }
+
+    const skill = await skillRepo.findOneBy({ id: skill_id });
+
+    if (!skill) {
+      throw new BadRequestError("欄位未填寫正確");
+    }
+
+    course.skill_id = skill_id;
+    course.name = name;
+    course.description = description;
+    course.start_at = new Date(start_at);
+    course.end_at = new Date(end_at);
+    course.max_participants = max_participants;
+    course.meeting_url = meeting_url;
+
+    return courseRepo.save(course);
+  },
+};
+
+export default courseService;
