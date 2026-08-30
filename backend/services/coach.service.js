@@ -1,4 +1,4 @@
-import { In } from "typeorm";
+import { In, MoreThan } from "typeorm";
 import dataSource from "../db/data-source.js";
 import { Coach } from "../entities/Coach.js";
 import { CoachSkill } from "../entities/CoachSkill.js";
@@ -15,6 +15,7 @@ import { UserRole } from "../utils/helper.js";
 
 const coachRepo = dataSource.getRepository(Coach);
 const coachSkillRepo = dataSource.getRepository(CoachSkill);
+const courseRepo = dataSource.getRepository(Course);
 
 const coachService = {
   async createCoach(
@@ -160,6 +161,104 @@ const coachService = {
         skill_ids,
       };
     });
+  },
+  async getPublicCoaches({ per, page }) {
+    const offset = Math.max(page - 1, 0) * per;
+
+    const coaches = await coachRepo.find({
+      relations: {
+        user: true,
+      },
+      order: {
+        created_at: "ASC",
+      },
+      skip: offset,
+      take: per,
+    });
+
+    return coaches.map((coach) => ({
+      id: coach.id,
+      user_id: coach.user_id,
+      name: coach.user.name,
+    }));
+  },
+  async getPublicCoachById(coachId) {
+    const coach = await coachRepo.findOne({
+      where: {
+        id: coachId,
+      },
+      relations: {
+        user: true,
+      },
+    });
+
+    if (!coach) {
+      throw new BadRequestError("找不到該教練");
+    }
+
+    const coachSkills = await coachSkillRepo.find({
+      where: {
+        coach_id: coach.id,
+      },
+      relations: {
+        skill: true,
+      },
+    });
+
+    return {
+      user: {
+        name: coach.user.name,
+        role: coach.user.role,
+      },
+      coach: {
+        id: coach.id,
+        user_id: coach.user_id,
+        experience_years: coach.experience_years,
+        description: coach.description,
+        profile_image_url: coach.profile_image_url,
+        created_at: coach.created_at,
+        updated_at: coach.updated_at,
+        skills: coachSkills.map((coachSkill) => coachSkill.skill.name),
+      },
+    };
+  },
+  async getPublicCoachCoursesById(coachId) {
+    const coach = await coachRepo.findOne({
+      where: {
+        id: coachId,
+      },
+      relations: {
+        user: true,
+      },
+    });
+
+    if (!coach) {
+      throw new BadRequestError("找不到該教練");
+    }
+
+    const courses = await courseRepo.find({
+      where: {
+        user_id: coach.user_id,
+        end_at: MoreThan(new Date()),
+      },
+      relations: {
+        skill: true,
+      },
+      order: {
+        start_at: "ASC",
+      },
+    });
+
+    return courses.map((course) => ({
+      id: course.id,
+      name: course.name,
+      description: course.description,
+      start_at: course.start_at,
+      end_at: course.end_at,
+      max_participants: course.max_participants,
+      coach_name: coach.user.name,
+      skill_name: course.skill.name,
+    }));
   },
 };
 

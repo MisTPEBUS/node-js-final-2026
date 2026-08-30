@@ -1,3 +1,4 @@
+import { LessThanOrEqual, MoreThan } from "typeorm";
 import dataSource from "../db/data-source.js";
 import { Course } from "../entities/Course.js";
 import { CourseBooking } from "../entities/CourseBooking.js";
@@ -5,10 +6,13 @@ import { Skill } from "../entities/Skill.js";
 import { BadRequestError } from "../utils/AppError.js";
 import { getCourseStatus } from "../utils/helper.js";
 
+const courseRepo = dataSource.getRepository(Course);
+const bookingRepo = dataSource.getRepository(CourseBooking);
+
+const skillRepo = dataSource.getRepository(Skill);
+
 const courseService = {
   async getCoachCoursesByUserId(userId) {
-    const courseRepo = dataSource.getRepository(Course);
-    const bookingRepo = dataSource.getRepository(CourseBooking);
     const now = new Date();
 
     const courses = await courseRepo.find({
@@ -49,8 +53,6 @@ const courseService = {
       meeting_url,
     },
   ) {
-    const courseRepo = dataSource.getRepository(Course);
-    const skillRepo = dataSource.getRepository(Skill);
     const skill = await skillRepo.findOneBy({
       id: skill_id,
     });
@@ -73,8 +75,6 @@ const courseService = {
     return courseRepo.save(course);
   },
   async getCoachCourseDetailById(userId, courseId) {
-    const courseRepo = dataSource.getRepository(Course);
-
     const course = await courseRepo.findOne({
       where: {
         id: courseId,
@@ -114,9 +114,6 @@ const courseService = {
       meeting_url,
     },
   ) {
-    const courseRepo = dataSource.getRepository(Course);
-    const skillRepo = dataSource.getRepository(Skill);
-
     const course = await courseRepo.findOneBy({
       id: courseId,
       user_id: userId,
@@ -141,6 +138,34 @@ const courseService = {
     course.meeting_url = meeting_url;
 
     return courseRepo.save(course);
+  },
+  async getOngoingCourses() {
+    const now = new Date();
+
+    const courses = await courseRepo.find({
+      where: {
+        start_at: LessThanOrEqual(now),
+        end_at: MoreThan(now),
+      },
+      relations: {
+        user: true,
+        skill: true,
+      },
+      order: {
+        start_at: "ASC",
+      },
+    });
+
+    return courses.map((course) => ({
+      id: course.id,
+      name: course.name,
+      description: course.description,
+      start_at: course.start_at,
+      end_at: course.end_at,
+      max_participants: course.max_participants,
+      coach_name: course.user.name,
+      skill_name: course.skill.name,
+    }));
   },
 };
 
